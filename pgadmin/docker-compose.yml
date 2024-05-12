@@ -1,0 +1,27 @@
+services:
+  pgadmin4:
+    # Note: you must provide the file pg_password.txt
+    # Note: you must create the folders pgadmin_data{pgadmin,config,servers,preferences}
+    #       mkdir -p pgadmin_data/{pgadmin,config,servers,preferences}
+    # Note: pgAdmin runs as the pgadmin user (UID: 5050) in the pgadmin group (GID: 5050) in the container.
+    # You must ensure that all files are readable, and where necessary (e.g. the working/session directory)
+    # writeable for this user on the host machine. For example:
+    #       sudo chown -R 5050:5050 pgadmin_data
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    network_mode: host
+    environment:
+      PGADMIN_DEFAULT_EMAIL: jannik.rosendahl@me.com
+      PGADMIN_DEFAULT_PASSWORD: /run/secrets/pg_password
+      PGADMIN_LISTEN_PORT: 5050
+    volumes:
+      - ./pgadmin_data/pgadmin:/var/lib/pgadmin
+      - ./pgadmin_data/config:/pgadmin4/config_local.py
+      - ./pgadmin_data/servers:/pgadmin4/servers.json
+      - ./pgadmin_data/preferences:/pgadmin4/preferences.json
+    secrets:
+      - pg_password
+
+secrets:
+  pg_password:
+    file: pg_password.txt
