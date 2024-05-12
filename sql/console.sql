@@ -549,3 +549,11 @@ join subject s
 group by s.uuid, e.properties_map_exec
 order by s.uuid, seq_len;
 
+select count(distinct programpoint)
+from event;
+
+select count(distinct hostid)
+from event;
+
+select distinct type
+from event;
