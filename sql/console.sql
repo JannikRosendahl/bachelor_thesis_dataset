@@ -557,3 +557,142 @@ from event;
 
 select distinct type
 from event;
+
+select count(*)
+from event e
+join subject s
+on e.subject_uuid = s.uuid
+where (
+    (e.ts >= '2018-04-06 11:20' and e.ts <= '2018-04-06 14:00')
+    or (e.ts >= '2018-04-11 15:00' and e.ts <= '2018-04-11 16:40')
+    or (e.ts >= '2018-04-12 14:00' and e.ts <= '2018-04-12 14:40')
+    or (e.ts >= '2018-04-13 09:00' and e.ts <= '2018-04-13 10:00')
+    )
+;
+select count(distinct s.uuid)
+from event e
+join subject s
+on e.subject_uuid = s.uuid
+where (
+    (e.ts >= '2018-04-06 11:20' and e.ts <= '2018-04-06 14:00')
+    or (e.ts >= '2018-04-11 15:00' and e.ts <= '2018-04-11 16:40')
+    or (e.ts >= '2018-04-12 14:00' and e.ts <= '2018-04-12 14:40')
+    or (e.ts >= '2018-04-13 09:00' and e.ts <= '2018-04-13 10:00')
+    )
+;
+
+select *
+from event e
+join subject s
+    on e.subject_uuid = s.uuid
+order by s.uuid, e.sequence_long
+limit 500;
+
+select min(e.ts), max(e.ts)
+
+select count(*)
+from subject
+where parentsubject_uuid is null;
+
+select *
+from subject
+where parentsubject_uuid is null;
+
+select *
+from subject
+where parentsubject_uuid is not null
+limit 100;
+
+select *
+from subject
+where parentsubject_uuid = '7D365ADB-3A8D-11E8-B8CE-15D78AC88FB6';
+
+select *
+from subject
+where uuid = '7E4FB151-3A8D-11E8-B8CE-15D78AC88FB6';
+
+select *
+from subject
+where uuid = '7D9C622D-3A8D-11E8-B8CE-15D78AC88FB6';
+
+select *
+from subject
+where uuid = '3076FCED-39BE-11E8-B8CE-15D78AC88FB6';
+
+WITH RECURSIVE subordinates AS (
+  SELECT
+    employee_id,
+    manager_id,
+    full_name
+  FROM
+    employees
+  WHERE
+    employee_id = 2
+  UNION
+  SELECT
+    e.employee_id,
+    e.manager_id,
+    e.full_name
+  FROM
+    employees e
+    INNER JOIN subordinates s ON s.employee_id = e.manager_id
+)
+SELECT * FROM subordinates;
+
+with recursive parent as (
+    select uuid, parentsubject_uuid
+    from subject
+    where uuid = 'E57A25AA-3945-11E8-BF66-D9AA8AFF4A69'
+    union
+    select c.uuid, .parentsubject_uuid
+    from subject s
+    join child c
+        on s.uuid = c.parentsubject_uuid
+) select * from child;
+
+select *
+from subject
+where uuid = 'E579D84A-3945-11E8-BF66-D9AA8AFF4A69';
+
+/*
+ root subject
+    B79925AF-39C3-11E8-B8CE-15D78AC88FB6
+    09CD07BF-3A10-11E8-B8CE-15D78AC88FB6
+    5C862313-39C3-11E8-B8CE-15D78AC88FB6
+    269A60A2-39BE-11E8-B8CE-15D78AC88FB6
+    6CFDB8D8-39C3-11E8-B8CE-15D78AC88FB6
+    22AB23C6-39BE-11E8-B8CE-15D78AC88FB6
+    BEEE0F3C-39C2-11E8-B8CE-15D78AC88FB6
+
+
+ non root subject
+    F04D0150-3739-11E8-BF66-D9AA8AFF4A69
+    F0546DE6-3739-11E8-BF66-D9AA8AFF4A69
+    F0F0BD7E-3739-11E8-BF66-D9AA8AFF4A69
+    F0F0FCC3-3739-11E8-BF66-D9AA8AFF4A69
+    F0FB03B0-3739-11E8-BF66-D9AA8AFF4A69
+    F196899C-3739-11E8-BF66-D9AA8AFF4A69
+    F199B2F5-3739-11E8-BF66-D9AA8AFF4A69
+
+
+ */
+WITH RECURSIVE ctename AS (
+      SELECT uuid, parentsubject_uuid
+      FROM subject
+      WHERE uuid = 'F04D0150-3739-11E8-BF66-D9AA8AFF4A69'
+   UNION ALL
+      SELECT subject.uuid, subject.parentsubject_uuid
+      FROM subject
+         JOIN ctename ON subject.parentsubject_uuid = ctename.uuid
+)
+SELECT * FROM ctename;
+
+select * from(
+select *
+from event e
+join subject s
+on e.subject_uuid = s.uuid
+where s.uuid = '65C53022-39C4-11E8-B8CE-15D78AC88FB6'
+order by e.sequence_long desc
+limit 100) as sub
+order by sub.sequence_long;
