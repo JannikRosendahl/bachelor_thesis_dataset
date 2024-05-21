@@ -696,3 +696,39 @@ where s.uuid = '65C53022-39C4-11E8-B8CE-15D78AC88FB6'
 order by e.sequence_long desc
 limit 100) as sub
 order by sub.sequence_long;
+
+select count(*) from (select distinct *
+                      from event e
+                               join subject s
+                                    on e.subject_uuid = s.uuid
+                               join principal p
+                                    on s.localprincipal = p.uuid
+                               left join fileobject fo1
+                                         on e.predicateobject_uuid = fo1.uuid
+                               left join fileobject fo2
+                                         on e.predicateobject2_uuid = fo2.uuid
+                               left join netflowobject nfo1
+                                         on e.predicateobject_uuid = nfo1.uuid
+                               left join netflowobject nfo2
+                                         on e.predicateobject_uuid = nfo2.uuid
+                      where e.ts >= '2018-04-06 11:21'
+                        and e.ts <= '2018-04-06 12:08') as sub;
+
+
+select * from event e limit 100;
+
+select distinct *
+from event e
+join subject s
+    on e.subject_uuid = s.uuid
+join principal p
+    on s.localprincipal = p.uuid
+left join fileobject fo1
+    on e.predicateobject_uuid = fo1.uuid
+left join fileobject fo2
+    on e.predicateobject2_uuid = fo2.uuid
+left join netflowobject nfo1
+    on e.predicateobject_uuid = nfo1.uuid
+left join netflowobject nfo2
+    on e.predicateobject_uuid = nfo2.uuid
+limit 0;
