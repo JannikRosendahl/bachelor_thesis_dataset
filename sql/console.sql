@@ -732,3 +732,46 @@ left join netflowobject nfo1
 left join netflowobject nfo2
     on e.predicateobject_uuid = nfo2.uuid
 limit 0;
+
+
+select *
+from event e
+where e.properties_map_exec is null
+limit 100;
+
+select distinct e.properties_map_exec
+from event e
+where not (
+    (e.ts >= '2018-04-06 11:20' and e.ts <= '2018-04-06 14:00')
+    or (e.ts >= '2018-04-11 15:00' and e.ts <= '2018-04-11 16:40')
+    or (e.ts >= '2018-04-12 14:00' and e.ts <= '2018-04-12 14:40')
+    or (e.ts >= '2018-04-13 09:00' and e.ts <= '2018-04-13 10:00')
+    )
+;
+
+select e.ts, e.properties_map_exec
+from event e
+where not (
+    (e.ts >= '2018-04-06 11:20' and e.ts <= '2018-04-06 14:00')
+    or (e.ts >= '2018-04-11 15:00' and e.ts <= '2018-04-11 16:40')
+    or (e.ts >= '2018-04-12 14:00' and e.ts <= '2018-04-12 14:40')
+    or (e.ts >= '2018-04-13 09:00' and e.ts <= '2018-04-13 10:00')
+    )
+    and e.properties_map_exec = 'pEja72mA'
+    or e.properties_map_exec = 'vUgefal'
+limit 1000;
+
+select count(*)
+from event e
+where subject_uuid in (
+select subject_uuid
+from event e
+where e.properties_map_exec = 'pEja72mA'
+or e.properties_map_exec = 'vUgefal');
+
+select distinct e.properties_map_exec
+from event e
+where e.ts < '2018-04-06 11:20';
+
+select min(e.ts), max(e.ts)
+from event e;
