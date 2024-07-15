@@ -775,3 +775,20 @@ where e.ts < '2018-04-06 11:20';
 
 select min(e.ts), max(e.ts)
 from event e;
+
+select count(*)
+from sequence;
+delete from sequence;
+commit;
+
+select e.type, e.properties_map_exec
+from event e
+where e.subject_uuid = 'C63B54D6-3DC7-11E8-A5CB-3FA3753A265A'
+order by e.sequence_long;
+
+select distinct e.properties_map_exec
+from event e
+where e.subject_uuid = '72FB0406-3678-11E8-BF66-D9AA8AFF4A69';
+
+select avg(length), min(length), max(length), percentile_cont(0.5) within group (order by length) as median
+from sequence;
