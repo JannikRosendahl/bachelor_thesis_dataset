@@ -9,11 +9,6 @@ select column_name from information_schema.columns where table_name = 'subject';
 
 select * from principal;
 
-
-
-select distinct(uuid)
-from principal;
-
 /* selects with only relevant cols */
 
 select
@@ -194,7 +189,7 @@ select count(*) from event where subject_uuid is null;
 /*
     wieviele versch properties_map_exec gibt es pro subject
 */
-select avg(c), percentile_cont(0.5) within group (order by c) as median from (
+select avg(c) from (
 select count(distinct properties_map_exec) as c, subject_uuid
 from event e
 join subject s
@@ -736,213 +731,15 @@ left join netflowobject nfo1
     on e.predicateobject_uuid = nfo1.uuid
 left join netflowobject nfo2
     on e.predicateobject_uuid = nfo2.uuid
+limit 0;
+
+
+select *
+from event e
+where e.properties_map_exec is null
 limit 100;
 
 select distinct e.properties_map_exec
-from event e;
-
-
-
-select s.uuid, count(e.uuid) as seq_len, e.properties_map_exec
-from event e
-join subject s
-    on e.subject_uuid = s.uuid
-group by s.uuid, e.properties_map_exec
-order by s.uuid, seq_len
-limit 100;
-
-
-select s.uuid, e.properties_map_exec, count(*) as count
-from event e
-join subject s
-    on e.subject_uuid = s.uuid
-where e.uuid != '123'
-group by s.uuid, e.properties_map_exec;
-
-
-select *
-from event e
-where subject_uuid = '65C53022-39C4-11E8-B8CE-15D78AC88FB6';
-
-select *
-from event e
-where properties_map_ppid = '1'
-limit 100;
-
-select exec, count(*) as count, avg(length), percentile_cont(0.5) within group (order by length) as median, max(length), min(length)
-from sequence
-
-group by exec
-order by count desc;
-
-select e.subject_uuid, e.properties_map_exec, e.type, count(*) as count
-from event e
-where e.properties_map_exec in ('mvin ')
-group by subject_uuid, properties_map_exec, type
-order by subject_uuid, properties_map_exec, type
-limit 100;
-
-
-select type, count(type) as count
-from event e
-group by type
-order by count desc;
-
-
-select e.subject_uuid, e.properties_map_exec, e.type, count(*) as count
-from event e
-where e.properties_map_exec = 'mv' or e.properties_map_exec = 'head'
-group by subject_uuid, properties_map_exec, type
-order by subject_uuid, properties_map_exec, type
-limit 100;
-
-
-select *
-from event e join subject s on e.subject_uuid = s.uuid
-limit 100;
-
-/* get a random sequence */
-select *
-from sequence
-order by random()
-limit 1;
-
-select type
-from event e
-where e.subject_uuid = '5F4A0DFE-393C-11E8-BF66-D9AA8AFF4A69'
-    and e.properties_map_exec = 'bash'
-order by e.sequence_long;
-
-select count(distinct type)
-from event;
-
-select distinct type
-from event;
-
-select max(length), avg(length), percentile_cont(0.995) within group (order by length asc)
-from sequence;
-
-select exec, count(*) as count
-from sequence
-group by exec
-order by count;
-
-select count(*)
-from sequence
-where length <= 1000;
-
-select distinct e.type
-from event e
-where properties_map_exec not in ('pwait',
-'ssh',
-'touch',
-'main',
-'makewhatis',
-'mail.local',
-'vUgefal',
-'lsvfs',
-'nice',
-'locate.code',
-'locale',
-'whoami',
-'chmod',
-'chown',
-'login',
-'minions',
-'which',
-'tmux-1002',
-'cut',
-'getty',
-'id',
-'pwd_mkdb',
-'init',
-'kldstat',
-'procstat',
-'pEja72mA',
-'qmgr',
-'devd',
-'stty',
-'ntpd',
-'php-fpm',
-'limits',
-'syslogd',
-'XIM',
-'ipop3d',
-'pw',
-'smtp',
-'bounce',
-'ifconfig',
-'uniq',
-'vi',
-'postmap',
-'nawk',
-'env',
-'nohup',
-'tee',
-'ping',
-'tail',
-'su',
-'ipfw',
-'test',
-'pfctl',
-'ipfstat',
-'jot',
-'csh',
-'stat',
-'diff',
-'uname'
-);
-
-
-select distinct e.properties_map_exec
-from event e;
-
-select distinct e.type
-from event e
-where e.properties_map_exec is NULL
-limit 500;
-
-select distinct e.type
-from event e
-where e.properties_map_exec is not null;
-
-select distinct e.type
-from event e;
-
-select *
-from event e
-where e.type = 'EVENT_ADD_OBJECT_ATTRIBUTE'
-order by sequence_long;
-
-select distinct event.subject_uuid
-from event
-where type = 'EVENT_FLOWS_TO';
-
-select *
-from event e
-where subject_uuid = '06C87090-3F1B-11E8-A5CB-3FA3753A265A'
-order by e.sequence_long;
-
-
-select count(*)
-from unnamedpipeobject;
-
-select distinct type
-from event
-where properties_map_exec is NULL
-limit 500;
-
-select count(*)
-from event
-where properties_map_exec is NULL;
-
-select count(*)
-from event;
-
-select count(distinct event.properties_map_exec)
-from event;
-
-select distinct properties_map_exec
 from event e
 where not (
     (e.ts >= '2018-04-06 11:20' and e.ts <= '2018-04-06 14:00')
@@ -951,9 +748,30 @@ where not (
     or (e.ts >= '2018-04-13 09:00' and e.ts <= '2018-04-13 10:00')
     )
 ;
-select distinct properties_map_exec
+
+select e.ts, e.properties_map_exec
 from event e
-where (
-    (e.ts <= '2018-04-06 11:20')
+where not (
+    (e.ts >= '2018-04-06 11:20' and e.ts <= '2018-04-06 14:00')
+    or (e.ts >= '2018-04-11 15:00' and e.ts <= '2018-04-11 16:40')
+    or (e.ts >= '2018-04-12 14:00' and e.ts <= '2018-04-12 14:40')
+    or (e.ts >= '2018-04-13 09:00' and e.ts <= '2018-04-13 10:00')
     )
-;
+    and e.properties_map_exec = 'pEja72mA'
+    or e.properties_map_exec = 'vUgefal'
+limit 1000;
+
+select count(*)
+from event e
+where subject_uuid in (
+select subject_uuid
+from event e
+where e.properties_map_exec = 'pEja72mA'
+or e.properties_map_exec = 'vUgefal');
+
+select distinct e.properties_map_exec
+from event e
+where e.ts < '2018-04-06 11:20';
+
+select min(e.ts), max(e.ts)
+from event e;
