@@ -790,5 +790,81 @@ select distinct e.properties_map_exec
 from event e
 where e.subject_uuid = '72FB0406-3678-11E8-BF66-D9AA8AFF4A69';
 
-select avg(length), min(length), max(length), percentile_cont(0.5) within group (order by length) as median
+select executable, count(*) as support, min(length), max(length), avg(length), percentile_cont(0.5) within group (order by length) as median, variance(length)
+from sequence
+group by executable
+order by median desc;
+
+select distinct event.properties_map_exec
+from event;
+
+select executable, count(*) as c
+from sequence
+group by executable
+order by c desc
+;
+
+select count(*)
+from event
+where properties_map_exec is null;
+
+select count(*)
 from sequence;
+
+select *
+from sequence
+where subject_uuid = 'FFFF69A7-3CA3-11E8-B8CE-15D78AC88FB6';
+
+select *
+from event
+where subject_uuid = '33C8B6C4-3F23-11E8-A5CB-3FA3753A265A'
+order by sequence_long;
+
+select count(*)
+from subject;
+
+select avg(c) from (
+select count(*) as c
+from sequence
+group by subject_uuid, executable) as A;
+
+select *
+from event e
+order by subject_uuid, sequence_long
+limit 500;
+
+select avg(c)
+from (
+select count(distinct event.threadid_int) as c
+from event
+group by subject_uuid) as sub;
+
+select distinct predicateobjectpath_string
+from event
+where properties_map_exec = 'sh'
+    and type = 'EVENT_EXECUTE'
+union;
+select distinct predicateobjectpath_string
+from event
+where properties_map_exec = 'dhclient'
+    and type = 'EVENT_EXECUTE';
+
+select distinct predicateobjectpath_string
+from event
+where properties_map_exec = 'master'
+    and type = 'EVENT_EXECUTE';
+
+select *
+from sequence
+where executable = 'sshd'
+    and length >= 20
+    and length <= 35;
+
+select *
+from event e
+join subject s
+    on e.subject_uuid = s.uuid
+join principal p
+    on s.localprincipal = p.uuid
+where e.subject_uuid = '6B32056F-39C3-11E8-B8CE-15D78AC88FB6'
+order by e.subject_uuid, e.sequence_long;
