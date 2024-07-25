@@ -868,3 +868,63 @@ join principal p
     on s.localprincipal = p.uuid
 where e.subject_uuid = '6B32056F-39C3-11E8-B8CE-15D78AC88FB6'
 order by e.subject_uuid, e.sequence_long;
+
+select count(distinct e.predicateobjectpath_string)
+from event e;
+
+select *
+from event
+where predicateobjectpath_string like '%random%'
+limit 500;
+
+select distinct principal.username_string
+from principal;
+
+select e.subject_uuid, e.properties_map_exec, e.ts, e.type, p.username_string, e.predicateobjectpath_string
+from event e
+join subject s
+    on e.subject_uuid = s.uuid
+join principal p
+    on s.localprincipal = p.uuid
+where e.subject_uuid in (
+    select s.subject_uuid, s.executable
+    from sequence s
+    where s.ts_end < '2018-04-06 11:20:00'
+    )
+order by e.subject_uuid, e.sequence_long
+
+
+select distinct s.executable
+from sequence s
+where s.executable not in (
+select distinct ss.executable
+from sequence ss
+where ss.ts_end < '2018-04-06 11:20:00');
+
+
+select *
+from event e
+join subject s
+    on e.subject_uuid = s.uuid
+join principal p
+    on s.localprincipal = p.uuid
+where e.subject_uuid in (
+    select s.subject_uuid
+    from sequence s
+    where s.ts_end < '2018-04-06 11:20:00'
+)
+order by e.subject_uuid, e.sequence_long
+limit 100;
+
+select distinct e.type
+from event e
+join subject s
+    on e.subject_uuid = s.uuid
+join principal p
+    on s.localprincipal = p.uuid
+where e.subject_uuid in (
+    select s.subject_uuid
+    from sequence s
+    where s.ts_end < '2018-04-06 11:20:00'
+)
+limit 100;
