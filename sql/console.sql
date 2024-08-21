@@ -928,3 +928,254 @@ where e.subject_uuid in (
     where s.ts_end < '2018-04-06 11:20:00'
 )
 limit 100;
+
+select *
+from event e
+join subject s
+    on e.subject_uuid = s.uuid
+join principal p
+    on s.localprincipal = p.uuid
+left join fileobject fo1
+    on e.predicateobject_uuid = fo1.uuid
+where e.subject_uuid in (
+    select s.subject_uuid
+    from sequence s
+    where s.ts_end < '2018-04-06 11:20:00'
+)
+limit 100;
+
+select distinct type
+from node_uuids;
+
+select distinct sub_type
+from node_uuids;
+
+select distinct type, sub_type
+from node_uuids;
+
+
+select count(*)
+from node_uuids;
+
+select count(*)
+from fileobject;
+select count(*)
+from (
+    select distinct *
+    from fileobject
+) a;
+
+select count(*)
+from unnamedpipeobject;
+select count(*)
+from (
+    select distinct *
+    from unnamedpipeobject
+) a;
+
+/* 2018-04-06 11:20 */
+select count(distinct e.properties_map_exec)
+from event e
+where e.ts < '2018-04-06 11:00';
+
+select count(distinct e.properties_map_exec)
+from event e
+where e.ts >= '2018-04-06 11:00';
+
+
+select distinct e1.properties_map_exec
+from event e1
+where e1.ts >= '2018-04-06 11:00'
+except
+select distinct e2.properties_map_exec
+from event e2
+where e2.ts < '2018-04-06 11:00';
+
+select distinct e1.properties_map_exec
+from event e1
+where e1.ts >= '2018-04-06 11:00'
+intersect
+select distinct e2.properties_map_exec
+from event e2
+where e2.ts < '2018-04-06 11:00';
+
+
+select avg(length), percentile_cont(0.5) within group (order by length) as median
+from sequence s;
+
+
+select *
+from event e
+where e.ts < '2018-04-06 11:00'
+and e.properties_map_exec = 'bounce'
+order by subject_uuid, e.sequence_long asc;
+
+
+select s.executable, count(*) as count, avg(s.length), percentile_cont(0.5) within group (order by s.length) as median, max(s.length), min(s.length)
+from sequence s
+group by s.executable
+order by count desc, avg desc, median desc;
+
+select *
+from event e
+where properties_map_port is not null
+limit 100;
+
+select distinct event.properties_map_port
+from event
+order by event.properties_map_port asc;
+
+select distinct n.localport, count(n.remoteport) as count
+from event e
+join netflowobject n
+on e.predicateobject_uuid = n.uuid
+group by n.localport
+order by count desc;
+
+select distinct properties_map_ppid, count(properties_map_ppid) as count
+from event e
+group by properties_map_ppid
+order by count desc;
+
+select count(*)
+from event e
+left join node_uuids fo1
+    on e.predicateobject_uuid = fo1.uuid
+left join node_uuids fo2
+    on e.predicateobject2_uuid = fo2.uuid
+    where e.subject_uuid in (
+    select s.subject_uuid
+    from sequence s
+    where s.ts_end < '2018-04-06 11:20:00'
+);
+
+/* find all rows in node_uuids where the uuid appears multiple times */
+select uuid, count(*)
+from node_uuids
+group by uuid
+having count(*) > 1;
+
+select *
+from node_uuids n
+where n.uuid in
+      (
+select uuid from (
+select uuid, count(*)
+from node_uuids
+group by uuid
+having count(*) > 1
+)as s1) order by n.uuid;
+
+select *
+from event e
+left join node_uuids fo1
+    on e.predicateobject_uuid = fo1.uuid
+join netflowobject
+    on e.predicateobject_uuid = netflowobject.uuid
+limit 100;
+
+
+/* distinct event type count */
+select count(distinct type)
+from event;
+
+/* distinct users count */
+select count(p.username_string)
+from principal p;
+select p.username_string
+from principal p;
+
+select distinct p.username_string
+from event e
+join subject s
+    on e.subject_uuid = s.uuid
+join principal p
+    on s.localprincipal = p.uuid
+where e.properties_map_exec = 'sshd';
+
+/* distinct paths count */
+select count(*)
+from (
+select distinct e1.predicateobjectpath_string
+from event e1
+union select distinct e2.predicateobject2path_string
+from event e2
+) as sub;
+
+/* distinct ip count */
+select count(*)
+from (
+select distinct n.localaddress
+from event e
+join netflowobject n
+    on e.predicateobject_uuid = n.uuid
+union
+select distinct n.remoteaddress
+from event e
+join netflowobject n
+    on e.predicateobject2_uuid = n.uuid) as sub;
+
+/* distinct port count */
+select count(*)
+from (
+select distinct n.localport
+from event e
+join netflowobject n
+    on e.predicateobject_uuid = n.uuid
+union
+select distinct n.remoteport
+from event e
+join netflowobject n
+    on e.predicateobject2_uuid = n.uuid) as sub;
+
+
+select *
+from event e
+where e.subject_uuid = '0000418D-3893-11E8-BF66-D9AA8AFF4A69'
+order by e.sequence_long;
+
+select distinct p.username_string
+from event e
+join subject s
+    on e.subject_uuid = s.uuid
+join principal p
+    on s.localprincipal = p.uuid
+where e.properties_map_exec = 'hostname';
+
+
+select distinct p.username_string
+from event e
+join subject s
+    on e.subject_uuid = s.uuid
+join principal p
+    on s.localprincipal = p.uuid
+where e.properties_map_exec = 'sleep';
+
+
+select distinct (n.type, n.sub_type)
+from event e
+join node_uuids n
+    on e.predicateobject_uuid = n.uuid
+where e.properties_map_exec = 'hostname';
+
+select distinct e.predicateobjectpath_string, count(e.predicateobjectpath_string) as count
+from event e
+where e.properties_map_exec = 'python2.7'
+group by e.predicateobjectpath_string;
+
+select distinct e.predicateobjectpath_string, count(e.predicateobjectpath_string) as count
+from event e
+where e.properties_map_exec = 'sleep'
+group by e.predicateobjectpath_string;
+
+
+select *
+from event e
+where e.properties_map_exec = 'sleep';
+
+
+SELECT DISTINCT e.properties_map_exec
+FROM event e
+WHERE e.properties_map_exec NOT IN (SELECT DISTINCT ee.properties_map_exec
+                         FROM event ee
+                         WHERE ee.predicateobjectpath_string IS NOT NULL or ee.predicateobject2path_string IS NOT NULL);
