@@ -12,6 +12,8 @@ where ctid not in (
 );
 
 
+
+
 /* drop import columns from tables */
 alter table event drop column line;
 alter table event drop column line_no;
