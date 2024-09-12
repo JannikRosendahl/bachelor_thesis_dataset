@@ -1140,7 +1140,7 @@ join subject s
     on e.subject_uuid = s.uuid
 join principal p
     on s.localprincipal = p.uuid
-where e.properties_map_exec = 'hostname';
+where e.properties_map_exec = 'tty';
 
 
 select distinct p.username_string
@@ -1149,7 +1149,7 @@ join subject s
     on e.subject_uuid = s.uuid
 join principal p
     on s.localprincipal = p.uuid
-where e.properties_map_exec = 'sleep';
+where e.properties_map_exec = 'grep';
 
 
 select distinct (n.type, n.sub_type)
@@ -1179,3 +1179,22 @@ FROM event e
 WHERE e.properties_map_exec NOT IN (SELECT DISTINCT ee.properties_map_exec
                          FROM event ee
                          WHERE ee.predicateobjectpath_string IS NOT NULL or ee.predicateobject2path_string IS NOT NULL);
+
+
+select count(*)
+from node_uuids;
+
+select count(*)
+from event;
+
+select *
+from event e
+order by e.subject_uuid, e.sequence_long
+limit 500;
+
+
+select *
+from event e
+where e.size_long is not null
+order by e.subject_uuid, e.sequence_long
+limit 500;
